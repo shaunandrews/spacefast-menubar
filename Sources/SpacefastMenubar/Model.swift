@@ -13,6 +13,8 @@ struct Space: Codable, Identifiable {
     let liveUrl: String?
     let thumbnail: Thumbnail?
     let createdAt: Date
+    /// Changes when the Space is republished; keys the dark thumbnail cache.
+    let updatedAt: Date?
 
     var displayTitle: String { title?.isEmpty == false ? title! : slug }
     var liveURL: URL? { liveUrl.flatMap(URL.init(string:)) }

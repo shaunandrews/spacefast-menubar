@@ -9,8 +9,12 @@ Your newest Spaces, one click from the menu bar.
   ⚙︎; right-click a Space to pin it to one or the other ("Always Open In").
 - **Favorites** — hover and click the star, or right-click.
 - **Copy URL** — hover for the link button, or right-click.
-- **Resize** — drag the left edge, bottom edge, or bottom-left corner. The
-  right edge stays put, so the window grows leftward.
+- **Resize** — drag the left edge, bottom edge, or bottom-left corner.
+- **Keyboard** — arrows move, ⌘← ⌘→ switch teams, Return opens, ⌘C copies the
+  link. `?` shows the rest.
+- **Dark thumbnails** — in dark mode, Spaces with a dark theme show it. The app
+  renders those itself (the API's screenshots are light) and caches them.
+- **Updates** — Sparkle checks daily; ⚙︎ › Check for Updates… checks now.
 
 Sign in from the menu: it opens the Spacefast approval page (the device flow)
 and asks for `read` access only. The key lives in an owner-only file in
@@ -27,14 +31,24 @@ Needs macOS 15+ and the Swift toolchain. The menu bar icon is
 `Resources/MenuBarIcon.svg`, the symbol from the Spacefast brand book, drawn
 as a template image.
 
+## Releasing
+
+```bash
+./release.sh 0.3.0          # build, zip, sign the appcast, point /download at it, publish
+```
+
+Write `site/releases/Spacefast-Menubar-<version>.html` first if you want
+release notes in the update window. Installed copies check
+`https://spaces-menubar.space.fast/appcast.xml` and only accept zips signed
+with the EdDSA key in `~/.config/spacefast-menubar/sparkle-private-key` (a copy
+is in the login Keychain, account `spacefast-menubar`). **Back that key up:**
+without it, existing installs can never update again. The public half is in
+`build.sh`.
+
 ## Website
 
 `site/` is https://spaces-menubar.space.fast, a public Space on Shaun's Team.
-
-```bash
-./release.sh 0.1.0          # universal build → site/Spacefast-Menubar-0.1.0.zip, /download points at it
-sf publish site --space spaces-menubar
-```
+`sf publish site` updates it; `release.sh` does that for you.
 
 The screenshots in `site/shots/` use made-up Spaces, never a real account.
 To redo them, capture the demo pages, then render the panel offscreen:

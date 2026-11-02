@@ -1,6 +1,7 @@
 import AppKit
 import Combine
 import SwiftUI
+import WebKit
 
 /// Borderless panels can't become key by default; the Space panel's web view needs key.
 final class Panel: NSPanel {
@@ -70,14 +71,82 @@ final class PanelController: NSObject, ObservableObject {
             .store(in: &bag)
 
         keyMonitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { [weak self] event in
-            guard event.keyCode == 53 else { return event } // esc
-            let handled = MainActor.assumeIsolated {
-                guard let self, self.panel.isKeyWindow else { return false }
-                self.hide()
-                return true
-            }
+            // Not `?? event` on the closure's result: a handled key returns nil.
+            let handled = MainActor.assumeIsolated { self?.handleKey(event) ?? false }
             return handled ? nil : event
         }
+    }
+
+    // MARK: Keyboard
+
+    /// How many cards a grid row holds at the list's width. Mirrors the grid's
+    /// `.adaptive(minimum: 150)` columns, 10pt spacing, and 10pt padding.
+    private var gridColumns: Int { max(1, Int((listWidth - 20 + 10) / 160)) }
+
+    private var webViewHasFocus: Bool {
+        guard let responder = panel.firstResponder as? NSView else { return false }
+        return sequence(first: responder, next: \.superview).contains { $0 is WKWebView }
+    }
+
+    /// The panel's whole key map; `?` shows it in the app.
+    private func handleKey(_ event: NSEvent) -> Bool {
+        guard panel.isKeyWindow else { return false }
+        let flags = event.modifierFlags.intersection(.deviceIndependentFlagsMask)
+        let command = flags.contains(.command)
+        let key = event.charactersIgnoringModifiers ?? ""
+
+        // A focused Space gets its own typing; only the keys that leave it are ours.
+        if webViewHasFocus {
+            if event.keyCode == 53 || (command && key == "w") {
+                if command { store.closeSpace() }
+                panel.makeFirstResponder(nil)
+                return true
+            }
+            return false
+        }
+        if event.keyCode == 53 { // esc: the topmost thing closes first
+            if store.showingKeys { store.showingKeys = false }
+            else if store.openSpace != nil { store.closeSpace() }
+            else { hide() }
+            return true
+        }
+        guard case .signedIn = store.account else { return false }
+
+        let grid = UserDefaults.standard.string(forKey: "layout") == Layout.grid.rawValue
+        let step = grid ? gridColumns : 1
+        switch event.keyCode {
+        case 126: store.moveSelection(by: -step) // up
+        case 125: store.moveSelection(by: step) // down
+        // Left and right move between cards in the grid, between teams in the
+        // list; with ⌘ they always switch teams.
+        case 123: command || !grid ? store.switchTab(by: -1) : store.moveSelection(by: -1)
+        case 124: command || !grid ? store.switchTab(by: 1) : store.moveSelection(by: 1)
+        case 115: store.selectEdge(last: false) // home
+        case 119: store.selectEdge(last: true) // end
+        case 36, 76: // return
+            guard let space = store.selectedSpace else { return true }
+            let other: OpenMode = store.openMode(for: space) == .app ? .browser : .app
+            store.open(space, in: command ? other : nil)
+        case 48 where flags.contains(.control): store.switchTab(by: flags.contains(.shift) ? -1 : 1) // ⌃⇥
+        default:
+            switch (command, key.lowercased()) {
+            case (true, let digit) where Int(digit).map((1...9).contains) == true:
+                store.selectTab(at: Int(digit)! - 1)
+            case (true, "c"): store.copySelectedURL()
+            case (true, "w"): store.closeSpace()
+            case (_, "r"): Task { await store.refresh() }
+            case (false, "["): store.switchTab(by: -1)
+            case (false, "]"): store.switchTab(by: 1)
+            case (false, "f"): store.selectedSpace.map(store.toggleFavorite)
+            case (false, "d"): store.selectedSpace?.dashboardURL.map(store.openExternally)
+            case (false, "g"):
+                UserDefaults.standard.set((grid ? Layout.list : .grid).rawValue, forKey: "layout")
+            case (false, "?"), (false, "/"): store.showingKeys.toggle()
+            default: return false
+            }
+        }
+        store.keyboardUsed()
+        return true
     }
 
     // MARK: Showing

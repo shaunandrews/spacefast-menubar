@@ -42,7 +42,7 @@ enum Demo {
                 teamId: entry.team, teamSlug: entry.team, defaultHostname: "\(entry.slug).space.fast",
                 liveUrl: "https://\(entry.slug).space.fast/",
                 thumbnail: Space.Thumbnail(url: pagesURL?.appending(path: "\(entry.slug).png").absoluteString),
-                createdAt: Date().addingTimeInterval(-entry.hoursAgo * 3600))
+                createdAt: Date().addingTimeInterval(-entry.hoursAgo * 3600), updatedAt: nil)
         }
     }()
 
@@ -81,6 +81,9 @@ enum Demo {
                     RootView()
                         .background(Color(nsColor: .windowBackgroundColor))
                         .clipShape(RoundedRectangle(cornerRadius: 12))
+                        // The hairline the panel has on screen, baked in so the
+                        // page's shadow can follow the image's own shape.
+                        .overlay(RoundedRectangle(cornerRadius: 12).strokeBorder(Color.primary.opacity(0.18), lineWidth: 0.5))
                         .environmentObject(store).environmentObject(panel))
                 host.appearance = NSAppearance(named: appearance)
                 host.frame = NSRect(x: 0, y: 0, width: width, height: height)

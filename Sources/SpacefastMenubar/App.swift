@@ -16,6 +16,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             return
         }
         controller = PanelController(store: SpacesStore())
+        _ = Updates.shared // starts Sparkle's daily background check
     }
 }
 
@@ -55,8 +56,62 @@ final class SpacesStore: ObservableObject {
     @Published var tab: String {
         didSet {
             UserDefaults.standard.set(tab, forKey: "tab")
+            selectedID = usingKeyboard ? spaces.first?.id : nil
+            scrollTarget = selectedID
             Task { await loadTab() }
         }
+    }
+
+    // MARK: Selection
+
+    /// The highlighted Space: moved by the keyboard, or by hovering.
+    @Published var selectedID: String?
+    /// Set only when the keyboard moves the selection, so the list scrolls
+    /// to it; hovering never scrolls.
+    @Published private(set) var scrollTarget: String?
+    @Published var showingKeys = false
+    private var usingKeyboard = false
+    /// Where the pointer was when the keyboard took over. Rows sliding under
+    /// a still pointer report hovers; only a real move gives selection back.
+    private var keyboardMouse: NSPoint?
+
+    var tabs: [String] { [Self.favoritesTab, Self.allTab] + teams.map(\.id) }
+    var selectedSpace: Space? { spaces.first { $0.id == selectedID } }
+
+    func hover(_ space: Space) {
+        if usingKeyboard, NSEvent.mouseLocation == keyboardMouse { return }
+        usingKeyboard = false
+        selectedID = space.id
+    }
+
+    func keyboardUsed() {
+        usingKeyboard = true
+        keyboardMouse = NSEvent.mouseLocation
+    }
+
+    func moveSelection(by delta: Int) {
+        guard !spaces.isEmpty else { return }
+        let index = spaces.firstIndex { $0.id == selectedID }
+        let next = index.map { min(max($0 + delta, 0), spaces.count - 1) } ?? 0
+        select(spaces[next].id)
+    }
+
+    func selectEdge(last: Bool) {
+        if let space = last ? spaces.last : spaces.first { select(space.id) }
+    }
+
+    func switchTab(by delta: Int) {
+        let index = (tabs.firstIndex(of: tab) ?? 1) + delta
+        if tabs.indices.contains(index) { tab = tabs[index] }
+    }
+
+    func selectTab(at index: Int) {
+        if tabs.indices.contains(index) { tab = tabs[index] }
+    }
+
+    private func select(_ id: String) {
+        selectedID = id
+        scrollTarget = id
     }
 
     var spaces: [Space] { tab == Self.favoritesTab ? favorites : spacesByTab[tab] ?? [] }
@@ -122,6 +177,8 @@ final class SpacesStore: ObservableObject {
                 let all = try await api.listSpaces(team: team)
                 spacesByTab[tab] = Array(all.sorted { $0.createdAt > $1.createdAt }.prefix(Self.shown))
             }
+            // Arrived on this tab by keyboard before its Spaces loaded.
+            if usingKeyboard, tab == self.tab, selectedSpace == nil, let first = spaces.first { select(first.id) }
             error = nil
         } catch let failure as SpacefastAPI.Failure where failure.status == 401 {
             forget()
@@ -188,6 +245,12 @@ final class SpacesStore: ObservableObject {
     }
 
     func closeSpace() { openSpace = nil }
+
+    func copySelectedURL() {
+        guard let url = selectedSpace?.liveUrl else { return }
+        NSPasteboard.general.clearContents()
+        NSPasteboard.general.setString(url, forType: .string)
+    }
 
     func webModel(for link: SpaceLink) -> WebModel {
         if let model = webModels[link.id] { return model }

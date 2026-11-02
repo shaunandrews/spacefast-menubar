@@ -1,0 +1,22 @@
+<?xml version="1.0" standalone="yes"?>
+<rss xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle" version="2.0">
+    <channel>
+        <title>Spacefast</title>
+        <item>
+            <title>0.2.0</title>
+            <pubDate>Mon, 02 Nov 2026 16:51:00 -0500</pubDate>
+            <sparkle:version>0.2.0</sparkle:version>
+            <sparkle:shortVersionString>0.2.0</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>15.0</sparkle:minimumSystemVersion>
+            <description><![CDATA[<h2>Spacefast 0.2.0</h2>
+<ul>
+  <li><strong>Keyboard everything.</strong> Arrows move, ⌘← ⌘→ switch teams, Return opens, ⌘C copies the link. Press ? for the full list.</li>
+  <li><strong>Dark thumbnails in dark mode.</strong> Spaces with a dark theme now show it in the grid.</li>
+  <li><strong>Tabs fade at the edges</strong> when there are more teams than fit.</li>
+  <li><strong>Updates.</strong> The app checks for new versions on its own, or use Check for Updates… in the settings menu.</li>
+</ul>
+]]></description>
+            <enclosure url="https://spaces-menubar.space.fast/releases/Spacefast-Menubar-0.2.0.zip" length="1735372" type="application/octet-stream" sparkle:edSignature="V1RNVpqN0VOlOUGx+FeXYnWEO3pWSVeknf2L0EzQE3VTxMkoJqjv6leZqH8bfhsCvQ2hxSGHP22z9ZA7vy5IAA=="/>
+        </item>
+    </channel>
+</rss>
