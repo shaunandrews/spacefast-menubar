@@ -1,6 +1,6 @@
-# Spacefast for the menu bar
+# Stash
 
-Your newest Spaces, one click from the menu bar.
+Your newest Spacefast Spaces, one click from the menu bar.
 
 - **Tabs** — Favorites (★), All, then one per team.
 - **List or grid** — the grid shows each Space's screenshot.
@@ -23,8 +23,8 @@ Sign out revokes it. Until the app has its own device client, the approval page 
 the Spacefast CLI.
 
 ```bash
-./build.sh                  # build/Spacefast.app (this Mac's architecture, ad-hoc signed)
-open build/Spacefast.app
+./build.sh                  # build/Stash.app (this Mac's architecture, ad-hoc signed)
+open build/Stash.app
 ```
 
 Needs macOS 15+ and the Swift toolchain. The menu bar icon is
@@ -37,7 +37,7 @@ as a template image.
 ./release.sh 0.3.0          # build, zip, sign the appcast, point /download at it, publish
 ```
 
-Write `site/releases/Spacefast-Menubar-<version>.html` first if you want
+Write `site/releases/Stash-<version>.html` first if you want
 release notes in the update window. Installed copies check
 `https://spaces-menubar.space.fast/appcast.xml` and only accept zips signed
 with the EdDSA key in `~/.config/spacefast-menubar/sparkle-private-key` (a copy
@@ -48,6 +48,8 @@ without it, existing installs can never update again. The public half is in
 ## Website
 
 `site/` is https://spaces-menubar.space.fast, a public Space on Shaun's Team.
+The address predates the name Stash; installed copies check it for updates,
+so it stays.
 `sf publish site` updates it; `release.sh` does that for you.
 
 The screenshots in `site/shots/` use made-up Spaces, never a real account.
@@ -61,7 +63,7 @@ done
 "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" --headless=new --hide-scrollbars \
   --force-device-scale-factor=2 --window-size=680,520 \
   --screenshot="$PWD/build/demo/habit-garden-panel.png" "file://$PWD/tools/demo-pages/habit-garden.html"
-swift build -c release && SPACEFAST_RENDER=site/shots SPACEFAST_DEMO_PAGES=build/demo .build/release/SpacefastMenubar
+swift build -c release && STASH_RENDER=site/shots STASH_DEMO_PAGES=build/demo .build/release/Stash
 ```
 
 Downloads are ad-hoc signed and not notarized, so macOS asks before the

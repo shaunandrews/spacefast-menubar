@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Builds Spacefast.app (menubar-only, no Dock icon) into ./build.
+# Builds Stash.app (menubar-only, no Dock icon) into ./build.
 #   UNIVERSAL=1   Apple silicon and Intel in one binary (for releases)
 #   VERSION=0.2.0 the version the app reports, and Sparkle compares
 #   SIGN_IDENTITY a codesigning identity (default ad-hoc)
@@ -16,21 +16,24 @@ flags=(-c release)
 swift build "${flags[@]}"
 bin="$(swift build "${flags[@]}" --show-bin-path)"
 
-app=build/Spacefast.app
+app=build/Stash.app
 rm -rf "$app"
 mkdir -p "$app/Contents/MacOS" "$app/Contents/Resources" "$app/Contents/Frameworks"
 cp Resources/* "$app/Contents/Resources/" 2>/dev/null || true
-cp "$bin/SpacefastMenubar" "$app/Contents/MacOS/Spacefast"
+cp "$bin/Stash" "$app/Contents/MacOS/Stash"
 # ditto keeps the framework's symlinks intact.
 ditto "$bin/Sparkle.framework" "$app/Contents/Frameworks/Sparkle.framework"
+# The bundle ID predates the name Stash. Keep it: Sparkle only installs an
+# update with the same ID, and preferences live under it.
 cat > "$app/Contents/Info.plist" <<PLIST
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-  <key>CFBundleName</key><string>Spacefast</string>
+  <key>CFBundleName</key><string>Stash</string>
+  <key>CFBundleDisplayName</key><string>Stash</string>
   <key>CFBundleIdentifier</key><string>com.spacefast.menubar</string>
-  <key>CFBundleExecutable</key><string>Spacefast</string>
+  <key>CFBundleExecutable</key><string>Stash</string>
   <key>CFBundlePackageType</key><string>APPL</string>
   <key>CFBundleShortVersionString</key><string>$VERSION</string>
   <key>CFBundleVersion</key><string>$VERSION</string>

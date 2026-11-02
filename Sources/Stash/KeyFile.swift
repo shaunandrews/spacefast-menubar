@@ -12,6 +12,7 @@ struct StoredKey: Codable {
 enum KeyFile {
     private static let url = FileManager.default
         .urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
+        // The app was "Spacefast Menubar" before it was Stash; moving it would sign everyone out.
         .appending(path: "Spacefast Menubar/credentials.json")
 
     static func load() -> StoredKey? {

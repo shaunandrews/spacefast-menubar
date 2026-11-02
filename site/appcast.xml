@@ -3,6 +3,22 @@
     <channel>
         <title>Spacefast</title>
         <item>
+            <title>0.3.0</title>
+            <pubDate>Mon, 02 Nov 2026 17:14:19 -0500</pubDate>
+            <sparkle:version>0.3.0</sparkle:version>
+            <sparkle:shortVersionString>0.3.0</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>15.0</sparkle:minimumSystemVersion>
+            <description><![CDATA[<h2>Stash 0.3.0</h2>
+<ul>
+  <li><strong>Meet Stash.</strong> Spacefast's menu bar app has a name. Same app, same Spaces, same shortcuts.</li>
+</ul>
+]]></description>
+            <enclosure url="https://spaces-menubar.space.fast/releases/Stash-0.3.0.zip" length="1729853" type="application/octet-stream" sparkle:edSignature="tEqtOlCip0BJihqaTpKte18NfzJNckLxrz+yxosz81bcSgOVtqNeYU9qUpvLOFhOhCtSWjqAclmLIwO9b7s2Dw=="/>
+            <sparkle:deltas>
+                <enclosure url="https://spaces-menubar.space.fast/releases/Stash0.3.0-0.2.0.delta" sparkle:deltaFrom="0.2.0" length="389926" type="application/octet-stream" sparkle:deltaFromSparkleExecutableSize="941872" sparkle:deltaFromSparkleLocales="de,he,ar,el,ja,fa,uk" sparkle:edSignature="4jgFc2bhO7SzSepURB7rmFVTr6q17SBsnD1NzPYHU4Ttlrkv2Lh3FsBxTxs+iWxqQb2CCj3mGy1ZdRg8ph/TAg=="/>
+            </sparkle:deltas>
+        </item>
+        <item>
             <title>0.2.0</title>
             <pubDate>Mon, 02 Nov 2026 16:51:00 -0500</pubDate>
             <sparkle:version>0.2.0</sparkle:version>

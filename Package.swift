@@ -2,16 +2,16 @@
 import PackageDescription
 
 let package = Package(
-    name: "SpacefastMenubar",
+    name: "Stash",
     platforms: [.macOS(.v15)],
     dependencies: [
         .package(url: "https://github.com/sparkle-project/Sparkle", exact: "2.10.0"),
     ],
     targets: [
         .executableTarget(
-            name: "SpacefastMenubar",
+            name: "Stash",
             dependencies: [.product(name: "Sparkle", package: "Sparkle")],
-            path: "Sources/SpacefastMenubar",
+            path: "Sources/Stash",
             // build.sh copies Sparkle.framework into Contents/Frameworks.
             linkerSettings: [.unsafeFlags(["-Xlinker", "-rpath", "-Xlinker", "@executable_path/../Frameworks"])]
         )

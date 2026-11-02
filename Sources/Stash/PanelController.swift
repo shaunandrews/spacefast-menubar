@@ -269,7 +269,7 @@ final class PanelController: NSObject, ObservableObject {
             image.isTemplate = true
             return image
         }
-        return NSImage(systemSymbolName: "sparkles.rectangle.stack", accessibilityDescription: "Spacefast")
+        return NSImage(systemSymbolName: "sparkles.rectangle.stack", accessibilityDescription: "Stash")
     }()
 
     private static func background() -> NSVisualEffectView {

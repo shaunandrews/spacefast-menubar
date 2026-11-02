@@ -4,13 +4,13 @@ import SwiftUI
 /// Renders the panel with made-up Spaces for the website's screenshots, never
 /// your own. Run the bare binary (its own preferences, no status item):
 ///
-///     SPACEFAST_RENDER=site/shots SPACEFAST_DEMO_PAGES=build/demo .build/release/SpacefastMenubar
+///     STASH_RENDER=site/shots STASH_DEMO_PAGES=build/demo .build/release/Stash
 ///
-/// `SPACEFAST_DEMO_PAGES` holds `<slug>.png` screenshots of tools/demo-pages.
+/// `STASH_DEMO_PAGES` holds `<slug>.png` screenshots of tools/demo-pages.
 @MainActor
 enum Demo {
-    static let renderURL = ProcessInfo.processInfo.environment["SPACEFAST_RENDER"].map { URL(fileURLWithPath: $0) }
-    static let pagesURL = ProcessInfo.processInfo.environment["SPACEFAST_DEMO_PAGES"].map { URL(fileURLWithPath: $0) }
+    static let renderURL = ProcessInfo.processInfo.environment["STASH_RENDER"].map { URL(fileURLWithPath: $0) }
+    static let pagesURL = ProcessInfo.processInfo.environment["STASH_DEMO_PAGES"].map { URL(fileURLWithPath: $0) }
     static var isRendering: Bool { renderURL != nil }
 
     /// The open Space's page, preferring a capture at the panel's own shape.

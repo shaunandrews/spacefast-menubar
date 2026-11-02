@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
 # Cuts a release: ./release.sh 0.2.0 [--no-publish]
 #
-# 1. Builds a universal Spacefast.app at that version and zips it into site/releases/.
+# 1. Builds a universal Stash.app at that version and zips it into site/releases/.
 # 2. Regenerates site/appcast.xml (what Sparkle checks), signing each zip with
 #    the EdDSA private key in ~/.config/spacefast-menubar/sparkle-private-key
 #    (SPARKLE_KEY_FILE overrides). Without that key, installed copies reject
 #    the update: back it up.
 # 3. Points /download at the new zip and publishes site/ to its Space.
 #
-# Release notes are optional: site/releases/Spacefast-Menubar-<version>.html,
+# Release notes are optional: site/releases/Stash-<version>.html,
 # shown in Sparkle's update window.
 set -euo pipefail
 cd "$(dirname "$0")"
@@ -31,9 +31,9 @@ if [[ -f site/appcast.xml ]]; then
 fi
 
 UNIVERSAL=1 VERSION="$VERSION" ./build.sh
-zip="Spacefast-Menubar-$VERSION.zip"
+zip="Stash-$VERSION.zip"
 rm -f "site/releases/$zip"
-ditto -c -k --sequesterRsrc --keepParent build/Spacefast.app "site/releases/$zip"
+ditto -c -k --sequesterRsrc --keepParent build/Stash.app "site/releases/$zip"
 
 $TOOLS/generate_appcast --ed-key-file "$KEY_FILE" \
   --download-url-prefix "$SITE_URL/releases/" \
@@ -46,6 +46,6 @@ size=$(du -k "site/releases/$zip" | awk '{printf "%.1f MB", $1 / 1024}')
 sed -i '' -E "s#(Apple silicon and Intel · )[0-9.]+ MB#\1$size#" site/index.html
 
 if [[ "${2:-}" != "--no-publish" ]]; then
-  sf publish site --space spaces-menubar --yes --wait -m "Spacefast menu bar $VERSION"
+  sf publish site --space spaces-menubar --yes --wait -m "Stash $VERSION"
 fi
 echo "Released $VERSION. Commit site/appcast.xml, site/_redirects, site/index.html, and any release notes."

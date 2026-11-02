@@ -211,7 +211,7 @@ struct SpacesPanel: View {
             Menu {
                 Picker("Open Spaces In", selection: $store.defaultOpenMode) {
                     Text("Browser").tag(OpenMode.browser)
-                    Text("Spacefast").tag(OpenMode.app)
+                    Text("Stash").tag(OpenMode.app)
                 }
                 Button("Keyboard Shortcuts") { store.showingKeys = true }
                 Divider()
@@ -221,7 +221,7 @@ struct SpacesPanel: View {
                 if case .signedIn = store.account {
                     Button("Sign Out") { store.signOut() }
                 }
-                Button("Quit Spacefast") { NSApp.terminate(nil) }
+                Button("Quit Stash") { NSApp.terminate(nil) }
             } label: {
                 Image(systemName: "gearshape")
             }
@@ -376,7 +376,7 @@ struct Thumbnail: View {
     }
 }
 
-/// A star for favorites, a panel glyph for Spaces set to open in Spacefast.
+/// A star for favorites, a panel glyph for Spaces set to open in Stash.
 struct SpaceBadges: View {
     let space: Space
     @EnvironmentObject private var store: SpacesStore
@@ -387,7 +387,7 @@ struct SpaceBadges: View {
         }
         if store.openOverride(for: space) == .app {
             Image(systemName: "sidebar.left").font(.caption2).foregroundStyle(.secondary)
-                .help("Opens in Spacefast")
+                .help("Opens in Stash")
         }
     }
 }
@@ -435,14 +435,14 @@ struct SpaceMenu: View {
     var body: some View {
         if let live = space.liveURL {
             Button("Open in Browser") { store.open(space, in: .browser) }
-            Button("Open in Spacefast") { store.open(space, in: .app) }
+            Button("Open in Stash") { store.open(space, in: .app) }
             Picker("Always Open In", selection: Binding(
                 get: { store.openOverride(for: space) },
                 set: { store.setOpenOverride($0, for: space) }
             )) {
                 Text("Default").tag(OpenMode?.none)
                 Text("Browser").tag(OpenMode?.some(.browser))
-                Text("Spacefast").tag(OpenMode?.some(.app))
+                Text("Stash").tag(OpenMode?.some(.app))
             }
             Divider()
             Button(store.isFavorite(space) ? "Unfavorite" : "Favorite") { store.toggleFavorite(space) }
