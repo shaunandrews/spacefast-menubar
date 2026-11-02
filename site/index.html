@@ -46,6 +46,7 @@
 
   header { display: flex; align-items: center; justify-content: space-between; padding: 22px 0; font-size: 15px; }
   header strong { font-weight: 600; }
+  header nav { display: flex; gap: 20px; }
   header a { color: var(--muted); text-decoration: none; }
   header a:hover { color: var(--ink); }
 
@@ -141,7 +142,7 @@
 <div class="wrap">
   <header>
     <strong>Stash</strong>
-    <a href="https://github.com/shaunandrews/spacefast-menubar">GitHub</a>
+    <nav><a href="releases/">Release notes</a><a href="https://github.com/shaunandrews/spacefast-menubar">GitHub</a></nav>
   </header>
 
   <div class="hero">
@@ -178,8 +179,8 @@
       <div class="benefit"><h3>One tab per team</h3><p>Personal, work, that side project. Flip between them, or see everything at once.</p></div>
       <div class="benefit"><h3>See it before you open it</h3><p>The grid shows a screenshot of every Space. Your eyes find it faster than your memory.</p></div>
       <div class="benefit"><h3>Star the regulars</h3><p>Favorites get their own tab, so the Spaces you use daily are always one click in.</p></div>
-      <div class="benefit"><h3>Copy a link, done</h3><p>Hover and hit the link button. The URL is on your clipboard.</p></div>
-      <div class="benefit"><h3>Read-only, on purpose</h3><p>It signs in with read-only access. It can see your Spaces, never change them.</p></div>
+      <div class="benefit"><h3>Keyboard all the way</h3><p>Arrows to move, ⌘← ⌘→ for teams, Return to open, ⌘C to copy the link. Press ? for the rest.</p></div>
+      <div class="benefit"><h3>See what others made</h3><p>The Discover tab brings in Spaces people are sharing on Spacefast, with a dot on what's new since you last looked. Not your thing? Hide it.</p></div>
     </div>
   </section>
 
@@ -219,7 +220,7 @@
 
   <section>
     <h2>Up and running in a minute.</h2>
-    <p class="sub">Three steps, one of them because macOS is careful.</p>
+    <p class="sub">Three steps, one of them because macOS is careful. Stash signs in read-only: it can see your Spaces, never change them.</p>
     <ol class="steps">
       <li><h3>Download and unzip</h3><p>Drag <strong>Stash.app</strong> into Applications.</p></li>
       <li><h3>Let it open</h3><p>It isn't notarized yet, so macOS asks first. Open it once, then go to <kbd>System Settings › Privacy &amp; Security</kbd> and click <strong>Open Anyway</strong>.</p></li>
@@ -235,7 +236,7 @@
 
   <footer>
     <span>Made by Shaun Andrews.</span>
-    <a href="https://github.com/shaunandrews/spacefast-menubar">Source on GitHub</a>
+    <span><a href="releases/">Release notes</a> · <a href="https://github.com/shaunandrews/spacefast-menubar">Source on GitHub</a></span>
   </footer>
 </div>
 <script>

@@ -15,6 +15,9 @@ struct Space: Codable, Identifiable {
     let createdAt: Date
     /// Changes when the Space is republished; keys the dark thumbnail cache.
     let updatedAt: Date?
+    /// Discover entries only: who made it, and where to start a copy.
+    var credit: String? = nil
+    var remixUrl: String? = nil
 
     var displayTitle: String { title?.isEmpty == false ? title! : slug }
     var liveURL: URL? { liveUrl.flatMap(URL.init(string:)) }
@@ -33,6 +36,32 @@ struct SpaceLink: Codable, Hashable {
     let id: String
     let title: String
     let url: URL
+}
+
+/// One Show & Tell entry, as `GET /v1/show-and-tell/entries` returns it.
+struct DiscoverEntry: Decodable {
+    let id: String
+    let title: String
+    let credit: String?
+    let liveUrl: String
+    let screenshotUrl: String?
+    let remixUrl: String?
+    let publishedAt: Date
+}
+
+extension Space {
+    /// A Discover entry shown like any other Space. Its id is the entry's
+    /// (`sat_…`), not a Space id, and it has no team or dashboard.
+    init(discover entry: DiscoverEntry) {
+        let host = URL(string: entry.liveUrl)?.host()
+        self.init(
+            id: entry.id, slug: host?.components(separatedBy: ".").first ?? entry.id, title: entry.title,
+            teamId: nil, teamSlug: nil, defaultHostname: host, liveUrl: entry.liveUrl,
+            thumbnail: Thumbnail(url: entry.screenshotUrl), createdAt: entry.publishedAt,
+            updatedAt: entry.publishedAt, credit: entry.credit, remixUrl: entry.remixUrl)
+    }
+
+    var isDiscoverEntry: Bool { id.hasPrefix("sat_") }
 }
 
 struct Team: Decodable, Identifiable {

@@ -31,6 +31,8 @@ final class SpacesStore: ObservableObject {
     /// The fixed tabs; every other tab is a team id.
     static let favoritesTab = "favorites"
     static let allTab = "all"
+    /// Show & Tell, second in the strip; hidden with `showDiscover`.
+    static let discoverTab = "discover"
     private static let shown = 20
 
     @Published private(set) var account: Account
@@ -56,6 +58,10 @@ final class SpacesStore: ObservableObject {
     @Published var tab: String {
         didSet {
             UserDefaults.standard.set(tab, forKey: "tab")
+            if tab == Self.discoverTab {
+                discoverNewSince = discoverSeenAt
+                markDiscoverSeen()
+            }
             selectedID = usingKeyboard ? spaces.first?.id : nil
             scrollTarget = selectedID
             Task { await loadTab() }
@@ -75,7 +81,42 @@ final class SpacesStore: ObservableObject {
     /// a still pointer report hovers; only a real move gives selection back.
     private var keyboardMouse: NSPoint?
 
-    var tabs: [String] { [Self.favoritesTab, Self.allTab] + teams.map(\.id) }
+    var tabs: [String] {
+        [Self.favoritesTab] + (showDiscover ? [Self.discoverTab] : []) + [Self.allTab] + teams.map(\.id)
+    }
+
+    // MARK: Discover
+
+    @Published var showDiscover: Bool {
+        didSet {
+            UserDefaults.standard.set(showDiscover, forKey: "showDiscover")
+            if !showDiscover, tab == Self.discoverTab { tab = Self.allTab }
+            if showDiscover { Task { await refreshDiscover() } }
+        }
+    }
+    /// The newest entry you've seen on Discover; newer ones get a dot on your next visit.
+    @Published private(set) var discoverSeenAt: Date? {
+        didSet { UserDefaults.standard.set(discoverSeenAt, forKey: "discoverSeenAt") }
+    }
+    /// Entries newer than this get a dot while you look. Nil on a first visit,
+    /// so everything isn't new at once.
+    @Published private(set) var discoverNewSince: Date?
+
+    func isNewOnDiscover(_ space: Space) -> Bool {
+        guard space.isDiscoverEntry, let since = discoverNewSince else { return false }
+        return space.createdAt > since
+    }
+
+    private func refreshDiscover() async {
+        guard showDiscover, let api, let entries = try? await api.listDiscover() else { return }
+        spacesByTab[Self.discoverTab] = entries.map(Space.init(discover:))
+        if tab == Self.discoverTab { markDiscoverSeen() }
+    }
+
+    private func markDiscoverSeen() {
+        guard let newest = spacesByTab[Self.discoverTab]?.first?.createdAt else { return }
+        if discoverSeenAt.map({ newest > $0 }) ?? true { discoverSeenAt = newest }
+    }
     var selectedSpace: Space? { spaces.first { $0.id == selectedID } }
 
     func hover(_ space: Space) {
@@ -135,6 +176,8 @@ final class SpacesStore: ObservableObject {
         defaultOpenMode = defaults.string(forKey: "openIn").flatMap(OpenMode.init) ?? .browser
         openModes = (defaults.dictionary(forKey: "openModes") as? [String: String] ?? [:])
             .compactMapValues(OpenMode.init)
+        showDiscover = defaults.object(forKey: "showDiscover") as? Bool ?? true
+        discoverSeenAt = defaults.object(forKey: "discoverSeenAt") as? Date
         guard !demo else { return }
         Task { await refresh() }
         timer = Timer.scheduledTimer(withTimeInterval: 300, repeats: true) { [weak self] _ in
@@ -158,10 +201,9 @@ final class SpacesStore: ObservableObject {
         guard let api else { return }
         if let teams = try? await api.listTeams() {
             self.teams = teams
-            if ![Self.allTab, Self.favoritesTab].contains(tab), !teams.contains(where: { $0.id == tab }) {
-                tab = Self.allTab
-            }
+            if !tabs.contains(tab) { tab = Self.allTab }
         }
+        if tab != Self.discoverTab { await refreshDiscover() }
         await loadTab()
     }
 
@@ -172,6 +214,9 @@ final class SpacesStore: ObservableObject {
         do {
             if tab == Self.favoritesTab {
                 await refreshFavorites(with: api)
+            } else if tab == Self.discoverTab {
+                spacesByTab[tab] = try await api.listDiscover().map(Space.init(discover:))
+                markDiscoverSeen()
             } else {
                 let team = tab == Self.allTab ? nil : teams.first { $0.id == tab }?.slug
                 let all = try await api.listSpaces(team: team)
@@ -195,7 +240,8 @@ final class SpacesStore: ObservableObject {
     /// failure keeps the snapshot.
     private func refreshFavorites(with api: SpacefastAPI) async {
         let fresh = await withTaskGroup(of: (String, Space?, Bool).self) { group in
-            for space in favorites {
+            // A starred Discover entry isn't a Space we can look up; keep its snapshot.
+            for space in favorites where !space.isDiscoverEntry {
                 group.addTask {
                     do { return (space.id, try await api.getSpace(space.id), false) } catch let failure as SpacefastAPI.Failure where failure.status == 404 {
                         return (space.id, nil, true)

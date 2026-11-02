@@ -14,6 +14,9 @@ Your newest Spacefast Spaces, one click from the menu bar.
   link. `?` shows the rest.
 - **Dark thumbnails** — in dark mode, Spaces with a dark theme show it. The app
   renders those itself (the API's screenshots are light) and caches them.
+- **Discover** — the binoculars tab, after ★: Show & Tell from spacefast.com/discover
+  (`GET /v1/show-and-tell/entries`, no sign-in). Entries newer than your last
+  visit get a dot. ⚙︎ › Show Discover hides it.
 - **Updates** — Sparkle checks daily; ⚙︎ › Check for Updates… checks now.
 
 Sign in from the menu: it opens the Spacefast approval page (the device flow)
@@ -37,9 +40,12 @@ as a template image.
 ./release.sh 0.3.0          # build, zip, sign the appcast, point /download at it, publish
 ```
 
-Write `site/releases/Stash-<version>.html` first if you want
-release notes in the update window. Installed copies check
-`https://stash.space.fast/appcast.xml` and only accept zips signed
+Write `site/releases/Stash-<version>.html` first; release.sh stops without
+it. The notes show in Sparkle's update window and on the public log at
+https://stash.space.fast/releases/, which `tools/release-log.py` rebuilds.
+
+Installed copies check `https://stash.space.fast/appcast.xml` and only accept
+zips signed
 with the EdDSA key in `~/.config/spacefast-menubar/sparkle-private-key` (a copy
 is in the login Keychain, account `spacefast-menubar`). **Back that key up:**
 without it, existing installs can never update again. The public half is in

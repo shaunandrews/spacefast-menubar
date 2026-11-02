@@ -76,6 +76,27 @@ struct SpacefastAPI {
         try await request("/v1/spaces/\(id)")
     }
 
+    /// Show & Tell, the public Spaces on spacefast.com/discover, newest first.
+    /// Needs no sign-in. Pages hold at most 50.
+    func listDiscover(pages: Int = 3) async throws -> [DiscoverEntry] {
+        struct Page: Decodable {
+            struct Pagination: Decodable { let nextCursor: String?; let hasMore: Bool }
+            let data: [DiscoverEntry]
+            let pagination: Pagination
+        }
+        var entries: [DiscoverEntry] = []
+        var cursor: String?
+        for _ in 0..<pages {
+            var path = "/v1/show-and-tell/entries?limit=50"
+            if let cursor { path += "&cursor=\(cursor)" }
+            let page: Page = try await request(path, authenticated: false, enveloped: false)
+            entries += page.data
+            guard page.pagination.hasMore, let next = page.pagination.nextCursor else { break }
+            cursor = next
+        }
+        return entries
+    }
+
     func revokeKey(_ id: String) async throws {
         let _: Empty = try await request("/v1/api-keys/\(id)", method: "DELETE")
     }
@@ -85,7 +106,8 @@ struct SpacefastAPI {
     private struct Problem: Decodable { let code: String?; let detail: String?; let title: String? }
 
     private func request<T: Decodable>(
-        _ path: String, method: String = "GET", body: [String: String]? = nil, authenticated: Bool = true
+        _ path: String, method: String = "GET", body: [String: String]? = nil, authenticated: Bool = true,
+        enveloped: Bool = true
     ) async throws -> T {
         var request = URLRequest(url: URL(string: path, relativeTo: Self.origin)!)
         request.httpMethod = method
@@ -118,7 +140,8 @@ struct SpacefastAPI {
         }
         if T.self == Empty.self { return Empty() as! T }
 
-        return try Self.decoder.decode(Envelope<T>.self, from: data).data
+        return enveloped ? try Self.decoder.decode(Envelope<T>.self, from: data).data
+            : try Self.decoder.decode(T.self, from: data)
     }
 
     private static let decoder: JSONDecoder = {

@@ -81,6 +81,15 @@ struct SpacesPanel: View {
                         }
                         .help("Favorites")
                         .id(SpacesStore.favoritesTab)
+                        if store.showDiscover {
+                            TabPill(selected: store.tab == SpacesStore.discoverTab) {
+                                store.tab = SpacesStore.discoverTab
+                            } label: {
+                                Image(systemName: store.tab == SpacesStore.discoverTab ? "binoculars.fill" : "binoculars")
+                            }
+                            .help("Discover: Spaces people are sharing")
+                            .id(SpacesStore.discoverTab)
+                        }
                         TabPill(selected: store.tab == SpacesStore.allTab) { store.tab = SpacesStore.allTab } label: {
                             Text("All")
                         }
@@ -168,6 +177,8 @@ struct SpacesPanel: View {
             Group {
                 if store.tab == SpacesStore.favoritesTab {
                     Text("Star a Space to keep it here.")
+                } else if store.tab == SpacesStore.discoverTab, !store.loading {
+                    Text("Nothing on Discover yet.")
                 } else if store.loading {
                     ProgressView().controlSize(.small)
                 } else {
@@ -213,9 +224,11 @@ struct SpacesPanel: View {
                     Text("Browser").tag(OpenMode.browser)
                     Text("Stash").tag(OpenMode.app)
                 }
+                Toggle("Show Discover", isOn: $store.showDiscover)
                 Button("Keyboard Shortcuts") { store.showingKeys = true }
                 Divider()
                 Button("Check for Updates…") { Updates.shared.checkForUpdates() }
+                Button("Release Notes") { store.openExternally(URL(string: "https://stash.space.fast/releases/")!) }
                 Text(Updates.shared.versionLabel)
                 Divider()
                 if case .signedIn = store.account {
@@ -267,10 +280,11 @@ struct SpaceRow: View {
         HStack(spacing: 10) {
             VStack(alignment: .leading, spacing: 2) {
                 HStack(spacing: 5) {
+                    if store.isNewOnDiscover(space) { NewDot() }
                     Text(space.displayTitle).lineLimit(1)
                     SpaceBadges(space: space)
                 }
-                Text(space.defaultHostname ?? space.slug)
+                Text(space.credit.map { "by \($0)" } ?? space.defaultHostname ?? space.slug)
                     .font(.caption).foregroundStyle(.secondary).lineLimit(1)
             }
             Spacer(minLength: 8)
@@ -330,11 +344,16 @@ struct SpaceCard: View {
                 }
             VStack(alignment: .leading, spacing: 1) {
                 HStack(spacing: 4) {
+                    if store.isNewOnDiscover(space) { NewDot() }
                     Text(space.displayTitle).font(.callout.weight(.medium)).lineLimit(1)
                     SpaceBadges(space: space)
                 }
-                Text(space.createdAt, format: .relative(presentation: .numeric, unitsStyle: .abbreviated))
-                    .font(.caption).foregroundStyle(.secondary)
+                if let credit = space.credit {
+                    Text("by \(credit)").font(.caption).foregroundStyle(.secondary).lineLimit(1)
+                } else {
+                    Text(space.createdAt, format: .relative(presentation: .numeric, unitsStyle: .abbreviated))
+                        .font(.caption).foregroundStyle(.secondary)
+                }
             }
         }
         .contentShape(Rectangle())
@@ -445,12 +464,23 @@ struct SpaceMenu: View {
                 Text("Stash").tag(OpenMode?.some(.app))
             }
             Divider()
+            if let remix = space.remixUrl.flatMap(URL.init(string:)) {
+                Button("Remix") { store.openExternally(remix) }
+            }
             Button(store.isFavorite(space) ? "Unfavorite" : "Favorite") { store.toggleFavorite(space) }
             Button("Copy URL") { copy(live.absoluteString) }
         }
         if let dashboard = space.dashboardURL {
             Button("Open in Dashboard") { store.openExternally(dashboard) }
         }
+    }
+}
+
+/// Marks what's new on Discover.
+struct NewDot: View {
+    var body: some View {
+        Circle().fill(Color.accentColor).frame(width: 6, height: 6)
+            .accessibilityLabel("New")
     }
 }
 
