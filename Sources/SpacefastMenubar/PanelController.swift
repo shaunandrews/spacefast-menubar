@@ -18,7 +18,8 @@ final class PanelController: NSObject, ObservableObject {
     private var height: CGFloat = PanelController.stored("panelHeight", default: 560)
 
     private let store: SpacesStore
-    private let statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
+    /// None while rendering the website's screenshots.
+    private let statusItem = Demo.isRendering ? nil : NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
     private let panel = Panel(contentRect: NSRect(x: 0, y: 0, width: 360, height: 560),
                               styleMask: [.borderless, .nonactivatingPanel], backing: .buffered, defer: false)
     private var clickMonitor: Any?
@@ -48,7 +49,7 @@ final class PanelController: NSObject, ObservableObject {
         panel.collectionBehavior = [.moveToActiveSpace, .fullScreenAuxiliary]
         panel.contentView = background
 
-        if let button = statusItem.button {
+        if let button = statusItem?.button {
             button.image = Self.mark
             button.target = self
             button.action = #selector(toggle)
@@ -92,7 +93,7 @@ final class PanelController: NSObject, ObservableObject {
         panel.orderFrontRegardless()
         panel.makeKey()
         animate(to: target, alpha: 1, duration: 0.2)
-        statusItem.button?.highlight(true)
+        statusItem?.button?.highlight(true)
         clickMonitor = NSEvent.addGlobalMonitorForEvents(matching: [.leftMouseDown, .rightMouseDown]) { [weak self] _ in
             MainActor.assumeIsolated { self?.hide() }
         }
@@ -103,7 +104,7 @@ final class PanelController: NSObject, ObservableObject {
         guard panel.isVisible else { return }
         if let clickMonitor { NSEvent.removeMonitor(clickMonitor) }
         clickMonitor = nil
-        statusItem.button?.highlight(false)
+        statusItem?.button?.highlight(false)
         NSAnimationContext.runAnimationGroup({ ctx in
             ctx.duration = 0.12
             panel.animator().alphaValue = 0
@@ -119,7 +120,7 @@ final class PanelController: NSObject, ObservableObject {
 
     /// The list centered under the icon (kept on screen), an open Space to its left.
     private func frame() -> NSRect {
-        guard let button = statusItem.button, let buttonWindow = button.window,
+        guard let button = statusItem?.button, let buttonWindow = button.window,
               let screen = buttonWindow.screen ?? NSScreen.main else { return panel.frame }
         let icon = buttonWindow.convertToScreen(button.convert(button.bounds, to: nil))
         let visible = screen.visibleFrame
@@ -143,6 +144,11 @@ final class PanelController: NSObject, ObservableObject {
             panel.animator().setFrame(frame, display: true)
             if let alpha { panel.animator().alphaValue = alpha }
         }
+    }
+
+    func stageDemo(listWidth: CGFloat, spaceWidth: CGFloat) {
+        self.listWidth = listWidth
+        self.spaceWidth = spaceWidth
     }
 
     // MARK: Resizing
@@ -189,7 +195,7 @@ final class PanelController: NSObject, ObservableObject {
     private static let mark: NSImage? = {
         if let url = Bundle.main.url(forResource: "MenuBarIcon", withExtension: "svg"),
            let image = NSImage(contentsOf: url) {
-            let height = 16.0
+            let height = 14.0
             image.size = NSSize(width: height * image.size.width / max(image.size.height, 1), height: height)
             image.isTemplate = true
             return image

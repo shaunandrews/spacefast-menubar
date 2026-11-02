@@ -314,7 +314,10 @@ struct Thumbnail: View {
         Color.primary.opacity(0.06)
             .aspectRatio(1.45, contentMode: .fit)
             .overlay {
-                if let url {
+                if let url, url.isFileURL {
+                    // Demo screenshots: drawn now, since the render won't wait.
+                    NSImage(contentsOf: url).map { Image(nsImage: $0).resizable().aspectRatio(contentMode: .fill) }
+                } else if let url {
                     AsyncImage(url: url) { phase in
                         if let image = phase.image {
                             image.resizable().aspectRatio(contentMode: .fill)

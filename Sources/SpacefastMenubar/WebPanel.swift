@@ -33,7 +33,16 @@ struct WebPanel: View {
             .padding(.horizontal, 12)
             .padding(.vertical, 7)
             Divider()
-            WebView(webView: web.view)
+            if Demo.isRendering {
+                // A web view doesn't draw offscreen; show the page's screenshot.
+                Color.clear
+                    .overlay(alignment: .topLeading) {
+                        Demo.pageImage(for: link.id).map { Image(nsImage: $0).resizable().scaledToFill() }
+                    }
+                    .clipped()
+            } else {
+                WebView(webView: web.view)
+            }
         }
     }
 }

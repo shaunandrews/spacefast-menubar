@@ -19,13 +19,39 @@ Sign out revokes it. Until the app has its own device client, the approval page 
 the Spacefast CLI.
 
 ```bash
-./build.sh                  # build/Spacefast.app
+./build.sh                  # build/Spacefast.app (this Mac's architecture, ad-hoc signed)
 open build/Spacefast.app
 ```
 
-Needs macOS 15+ and the Swift toolchain. The build signs with your first Apple
-Development certificate (`SIGN_IDENTITY` overrides), else ad-hoc. The menu bar
-icon is `Resources/MenuBarIcon.svg`, drawn as a template image.
+Needs macOS 15+ and the Swift toolchain. The menu bar icon is
+`Resources/MenuBarIcon.svg`, the symbol from the Spacefast brand book, drawn
+as a template image.
+
+## Website
+
+`site/` is https://spaces-menubar.space.fast, a public Space on Shaun's Team.
+
+```bash
+./release.sh 0.1.0          # universal build → site/Spacefast-Menubar-0.1.0.zip, /download points at it
+sf publish site --space spaces-menubar
+```
+
+The screenshots in `site/shots/` use made-up Spaces, never a real account.
+To redo them, capture the demo pages, then render the panel offscreen:
+
+```bash
+mkdir -p build/demo && for f in tools/demo-pages/*.html; do
+  "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" --headless=new --hide-scrollbars \
+    --window-size=1440,900 --screenshot="$PWD/build/demo/$(basename "$f" .html).png" "file://$PWD/$f"
+done
+"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" --headless=new --hide-scrollbars \
+  --force-device-scale-factor=2 --window-size=680,520 \
+  --screenshot="$PWD/build/demo/habit-garden-panel.png" "file://$PWD/tools/demo-pages/habit-garden.html"
+swift build -c release && SPACEFAST_RENDER=site/shots SPACEFAST_DEMO_PAGES=build/demo .build/release/SpacefastMenubar
+```
+
+Downloads are ad-hoc signed and not notarized, so macOS asks before the
+first launch (the page explains Open Anyway).
 
 ## Later: privacy padlocks
 

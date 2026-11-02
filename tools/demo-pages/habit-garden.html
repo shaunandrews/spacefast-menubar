@@ -1,0 +1,10 @@
+<!doctype html><meta charset="utf-8"><style>
+body{margin:0;font:16px/1.4 -apple-system,system-ui;background:#f4f1ea;color:#23301f}
+.wrap{padding:48px 64px}h1{font-size:44px;margin:0 0 6px;letter-spacing:-.02em}p{margin:0 0 32px;color:#5d6b57}
+.grid{display:grid;grid-template-columns:180px repeat(14,1fr);gap:8px;align-items:center}
+.h{font-weight:600}.d{aspect-ratio:1;border-radius:8px;background:#e3e0d6}.on{background:#5fa463}.on2{background:#8cc46a}.on3{background:#c7df8f}
+.stats{display:flex;gap:16px;margin-top:40px}.card{flex:1;background:#fff;border-radius:16px;padding:20px 24px}.card b{display:block;font-size:34px}
+</style><div class="wrap"><h1>🌱 Habit Garden</h1><p>Water a habit every day and watch it grow. 14-day view.</p>
+<div class="grid" id="g"></div><div class="stats"><div class="card"><b>23</b>day streak · Morning walk</div><div class="card"><b>86%</b>this week</div><div class="card"><b>5</b>habits blooming</div></div></div>
+<script>const h=["Morning walk","Read 20 pages","No phone at dinner","Stretch","Write 3 lines"];const g=document.getElementById('g');
+h.forEach((n,i)=>{g.insertAdjacentHTML('beforeend',`<div class=h>${n}</div>`);for(let d=0;d<14;d++){const r=(i*7+d*13)%10;g.insertAdjacentHTML('beforeend',`<div class="d ${r<5?'on':r<7?'on2':r<8?'on3':''}"></div>`)}})</script>

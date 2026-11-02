@@ -8,6 +8,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private var controller: PanelController?
 
     func applicationDidFinishLaunching(_ notification: Notification) {
+        if Demo.isRendering {
+            Task {
+                await Demo.run()
+                NSApp.terminate(nil)
+            }
+            return
+        }
         controller = PanelController(store: SpacesStore())
     }
 }
@@ -56,13 +63,16 @@ final class SpacesStore: ObservableObject {
 
     private var timer: Timer?
     private var signIn: Task<Void, Never>?
+    /// Made-up Spaces for the website's screenshots: no key file, no network.
+    private let isDemo: Bool
     private var api: SpacefastAPI? {
-        guard case .signedIn(let key) = account else { return nil }
+        guard !isDemo, case .signedIn(let key) = account else { return nil }
         return SpacefastAPI(token: key.secret)
     }
 
-    init() {
-        account = KeyFile.load().map(Account.signedIn) ?? .signedOut
+    init(demo: Bool = false) {
+        isDemo = demo
+        account = demo ? .signedOut : KeyFile.load().map(Account.signedIn) ?? .signedOut
         let defaults = UserDefaults.standard
         tab = defaults.string(forKey: "tab") ?? Self.allTab
         favorites = defaults.data(forKey: "favorites")
@@ -70,10 +80,23 @@ final class SpacesStore: ObservableObject {
         defaultOpenMode = defaults.string(forKey: "openIn").flatMap(OpenMode.init) ?? .browser
         openModes = (defaults.dictionary(forKey: "openModes") as? [String: String] ?? [:])
             .compactMapValues(OpenMode.init)
+        guard !demo else { return }
         Task { await refresh() }
         timer = Timer.scheduledTimer(withTimeInterval: 300, repeats: true) { [weak self] _ in
             Task { await self?.refresh() }
         }
+    }
+
+    func stageDemo(teams: [Team], spaces: [Space], favorites: [Space], inApp: [String], tab: String, open: SpaceLink?) {
+        guard isDemo else { return }
+        account = .signedIn(StoredKey(id: "demo", secret: ""))
+        self.teams = teams
+        spacesByTab = [Self.allTab: spaces]
+        for team in teams { spacesByTab[team.id] = spaces.filter { $0.teamId == team.id } }
+        self.favorites = favorites
+        openModes = Dictionary(uniqueKeysWithValues: inApp.map { ($0, .app) })
+        self.tab = tab
+        openSpace = open
     }
 
     func refresh() async {
