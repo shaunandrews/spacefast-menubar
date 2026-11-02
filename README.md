@@ -39,7 +39,7 @@ as a template image.
 
 Write `site/releases/Stash-<version>.html` first if you want
 release notes in the update window. Installed copies check
-`https://spaces-menubar.space.fast/appcast.xml` and only accept zips signed
+`https://stash.space.fast/appcast.xml` and only accept zips signed
 with the EdDSA key in `~/.config/spacefast-menubar/sparkle-private-key` (a copy
 is in the login Keychain, account `spacefast-menubar`). **Back that key up:**
 without it, existing installs can never update again. The public half is in
@@ -47,9 +47,9 @@ without it, existing installs can never update again. The public half is in
 
 ## Website
 
-`site/` is https://spaces-menubar.space.fast, a public Space on Shaun's Team.
-The address predates the name Stash; installed copies check it for updates,
-so it stays.
+`site/` is https://stash.space.fast, a public Space on Shaun's Team. Until
+0.3.1 the feed lived at spaces-menubar.space.fast, which redirects here for
+now; builds from 0.3.1 on check stash.space.fast directly.
 `sf publish site` updates it; `release.sh` does that for you.
 
 The screenshots in `site/shots/` use made-up Spaces, never a real account.

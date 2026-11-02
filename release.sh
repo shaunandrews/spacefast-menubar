@@ -13,7 +13,7 @@
 set -euo pipefail
 cd "$(dirname "$0")"
 VERSION="${1:?usage: ./release.sh <version> [--no-publish], e.g. 0.2.0}"
-SITE_URL=https://spaces-menubar.space.fast
+SITE_URL=https://stash.space.fast
 KEY_FILE="${SPARKLE_KEY_FILE:-$HOME/.config/spacefast-menubar/sparkle-private-key}"
 TOOLS=.build/artifacts/sparkle/Sparkle/bin
 
@@ -46,6 +46,6 @@ size=$(du -k "site/releases/$zip" | awk '{printf "%.1f MB", $1 / 1024}')
 sed -i '' -E "s#(Apple silicon and Intel · )[0-9.]+ MB#\1$size#" site/index.html
 
 if [[ "${2:-}" != "--no-publish" ]]; then
-  sf publish site --space spaces-menubar --yes --wait -m "Stash $VERSION"
+  sf publish site --space stash --yes --wait -m "Stash $VERSION"
 fi
 echo "Released $VERSION. Commit site/appcast.xml, site/_redirects, site/index.html, and any release notes."

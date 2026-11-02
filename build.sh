@@ -7,7 +7,7 @@ set -euo pipefail
 cd "$(dirname "$0")"
 
 # The feed Sparkle checks, and the public half of the key release.sh signs with.
-FEED_URL=https://spaces-menubar.space.fast/appcast.xml
+FEED_URL=https://stash.space.fast/appcast.xml
 PUBLIC_ED_KEY=aQ3ewORUPOKpgWZwA/VCg1F3kYJtrip7krhgFVa80zQ=
 VERSION="${VERSION:-0.2.0}"
 
