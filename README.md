@@ -12,8 +12,10 @@ Your newest Spacefast Spaces, one click from the menu bar.
 - **Resize** — drag the left edge, bottom edge, or bottom-left corner.
 - **Keyboard** — arrows move, ⌘← ⌘→ switch teams, Return opens, ⌘C copies the
   link. `?` shows the rest.
-- **Dark thumbnails** — in dark mode, Spaces with a dark theme show it. The app
-  renders those itself (the API's screenshots are light) and caches them.
+- **Dark thumbnails** — in dark mode, Spaces with a dark theme show it: the
+  API's mShots URL plus `color_scheme=dark`. Thumbnails mShots is still making
+  are retried, not shown as "Generating Preview".
+- **Open at Login** — on after the first launch; ⚙︎ turns it off.
 - **Discover** — the binoculars tab, after ★: Show & Tell from spacefast.com/discover
   (`GET /v1/show-and-tell/entries`, no sign-in). Entries newer than your last
   visit get a dot. ⚙︎ › Show Discover hides it.
@@ -30,7 +32,8 @@ the Spacefast CLI.
 open build/Stash.app
 ```
 
-Needs macOS 15+ and the Swift toolchain. The menu bar icon is
+Needs macOS 15+ and the Swift toolchain. MIT licensed. The app icon is a
+placeholder from `swift tools/make-icon.swift`. The menu bar icon is
 `Resources/MenuBarIcon.svg`, the symbol from the Spacefast brand book, drawn
 as a template image.
 

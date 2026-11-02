@@ -225,6 +225,7 @@ struct SpacesPanel: View {
                     Text("Stash").tag(OpenMode.app)
                 }
                 Toggle("Show Discover", isOn: $store.showDiscover)
+                Toggle("Open at Login", isOn: Binding(get: { LaunchAtLogin.isEnabled }, set: { LaunchAtLogin.set($0) }))
                 Button("Keyboard Shortcuts") { store.showingKeys = true }
                 Divider()
                 Button("Check for Updates…") { Updates.shared.checkForUpdates() }
@@ -317,15 +318,19 @@ struct SpaceRow: View {
 struct SpaceCard: View {
     let space: Space
     @EnvironmentObject private var store: SpacesStore
-    @ObservedObject private var dark = DarkThumbnails.shared
+    @ObservedObject private var thumbnails = Thumbnails.shared
     @Environment(\.colorScheme) private var colorScheme
     @State private var hovering = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
-            Thumbnail(url: space.thumbnailURL, image: colorScheme == .dark ? dark.images[space.id] : nil)
-                .onAppear { if colorScheme == .dark { dark.request(space) } }
-                .onChange(of: colorScheme) { _, scheme in if scheme == .dark { dark.request(space) } }
+            // Dark mode shows the light screenshot until the dark one arrives.
+            Thumbnail(url: space.thumbnailURL,
+                      image: thumbnails.image(for: space, dark: colorScheme == .dark)
+                          ?? thumbnails.image(for: space, dark: false))
+                .task(id: "\(space.thumbnailURL?.absoluteString ?? "")-\(colorScheme)") {
+                    await thumbnails.load(space, dark: colorScheme == .dark)
+                }
                 .overlay(alignment: .topTrailing) {
                     if hovering {
                         SpaceActions(space: space)
@@ -369,7 +374,7 @@ struct SpaceCard: View {
 
 struct Thumbnail: View {
     let url: URL?
-    /// A locally rendered dark-mode snapshot, used over `url` when present.
+    /// The screenshot `Thumbnails` loaded; blank until it arrives.
     var image: NSImage? = nil
 
     var body: some View {
@@ -381,13 +386,7 @@ struct Thumbnail: View {
                 } else if let url, url.isFileURL {
                     // Demo screenshots: drawn now, since the render won't wait.
                     NSImage(contentsOf: url).map { Image(nsImage: $0).resizable().aspectRatio(contentMode: .fill) }
-                } else if let url {
-                    AsyncImage(url: url) { phase in
-                        if let image = phase.image {
-                            image.resizable().aspectRatio(contentMode: .fill)
-                        }
-                    }
-                } else {
+                } else if url == nil {
                     Image(systemName: "photo").foregroundStyle(.tertiary)
                 }
             }

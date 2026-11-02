@@ -17,6 +17,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         }
         controller = PanelController(store: SpacesStore())
         _ = Updates.shared // starts Sparkle's daily background check
+        LaunchAtLogin.enableOnFirstLaunch()
     }
 }
 
@@ -352,13 +353,20 @@ final class SpacesStore: ObservableObject {
         account = .signedOut
     }
 
+    /// Signs out here and revokes the key in Spacefast, so it stops working
+    /// and leaves your API keys. If revoking fails, says so: signed out here
+    /// isn't the same as revoked.
     func signOut() {
-        if case .signedIn(let key) = account {
-            // Best effort: drop the key server-side too.
-            Task { try? await SpacefastAPI(token: key.secret).revokeKey(key.id) }
-        }
+        guard case .signedIn(let key) = account else { return }
         forget()
         error = nil
+        Task {
+            do {
+                try await SpacefastAPI(token: key.secret).revokeKey(key.id)
+            } catch {
+                self.error = "Signed out, but the key couldn't be revoked. Revoke it under API keys in the Spacefast dashboard."
+            }
+        }
     }
 
     private func forget() {
