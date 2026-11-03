@@ -195,7 +195,7 @@ final class PanelController: NSObject, ObservableObject {
         let visible = screen.visibleFrame
         let signedIn = if case .signedIn = store.account { true } else { false }
         let width = listWidth + (signedIn && store.openSpace != nil ? spaceWidth + 1 : 0)
-        let h = signedIn ? min(max(height, 300), visible.height - 16) : 190
+        let h = signedIn ? min(max(height, 300), visible.height - 16) : 300
         let listX = min(icon.midX - listWidth / 2, visible.maxX - 8 - listWidth)
         let x = max(listX + listWidth - width, visible.minX + 8)
         return NSRect(x: x, y: visible.maxY - 6 - h, width: width, height: h)
@@ -261,32 +261,33 @@ final class PanelController: NSObject, ObservableObject {
 
     /// The Spacefast mark from Resources/MenuBarIcon.svg, as a template so it
     /// follows the menu bar's appearance.
-    private static let mark: NSImage? = {
-        if let url = Bundle.main.url(forResource: "MenuBarIcon", withExtension: "svg"),
-           let image = NSImage(contentsOf: url) {
-            let height = 14.0
-            image.size = NSSize(width: height * image.size.width / max(image.size.height, 1), height: height)
-            image.isTemplate = true
-            return image
-        }
-        return NSImage(systemSymbolName: "sparkles.rectangle.stack", accessibilityDescription: "Stash")
-    }()
+    private static let mark: NSImage? = Theme.mark(height: 14)
+        ?? NSImage(systemSymbolName: "sparkles.rectangle.stack", accessibilityDescription: "Stash")
 
-    private static func background() -> NSVisualEffectView {
-        let view = NSVisualEffectView(frame: NSRect(x: 0, y: 0, width: 360, height: 560))
-        view.material = .popover
-        view.blendingMode = .behindWindow
-        view.state = .active
-        // Stretchable rounded mask: clips the blur and shapes the shadow.
-        let r: CGFloat = 12
-        let mask = NSImage(size: NSSize(width: r * 2 + 1, height: r * 2 + 1), flipped: false) { rect in
-            NSColor.black.setFill()
-            NSBezierPath(roundedRect: rect, xRadius: r, yRadius: r).fill()
-            return true
-        }
-        mask.capInsets = NSEdgeInsets(top: r, left: r, bottom: r, right: r)
-        mask.resizingMode = .stretch
-        view.maskImage = mask
-        return view
+    /// A solid slab with big rounded corners and a hairline edge, like
+    /// spacefast.com's sections, instead of the system popover's glass.
+    private static func background() -> NSView { SlabView(frame: NSRect(x: 0, y: 0, width: 360, height: 560)) }
+}
+
+/// The panel's ground: white or near-black with the appearance, which a
+/// layer's CGColor doesn't follow on its own.
+final class SlabView: NSView {
+    override init(frame: NSRect) {
+        super.init(frame: frame)
+        wantsLayer = true
+        layer?.cornerRadius = Theme.panelRadius
+        layer?.cornerCurve = .continuous
+        layer?.masksToBounds = true
+        layer?.borderWidth = 1
+    }
+
+    required init?(coder: NSCoder) { fatalError("init(coder:) is not used") }
+
+    override var wantsUpdateLayer: Bool { true }
+
+    override func updateLayer() {
+        let dark = effectiveAppearance.bestMatch(from: [.darkAqua, .aqua]) == .darkAqua
+        layer?.backgroundColor = NSColor(white: dark ? 0.055 : 1, alpha: 1).cgColor
+        layer?.borderColor = NSColor(white: dark ? 1 : 0, alpha: dark ? 0.12 : 0.12).cgColor
     }
 }

@@ -3,6 +3,30 @@
     <channel>
         <title>Stash</title>
         <item>
+            <title>0.6.0</title>
+            <pubDate>Mon, 02 Nov 2026 21:54:40 -0500</pubDate>
+            <sparkle:version>0.6.0</sparkle:version>
+            <sparkle:shortVersionString>0.6.0</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>15.0</sparkle:minimumSystemVersion>
+            <description><![CDATA[<h2>Stash 0.6.0</h2>
+<ul>
+  <li><strong>A new look.</strong> Stash borrows from spacefast.com now: Spacefast's typeface, a rounded panel, and your tabs in a track with a green pill that slides between them. Light and dark both.</li>
+  <li><strong>Little thumbnails in the list,</strong> so you can spot a Space without switching to the grid.</li>
+  <li><strong>Hover actions in one bar.</strong> Star, copy the link, or open the dashboard from a single strip that stays readable over any screenshot.</li>
+  <li><strong>Some fun.</strong> Cards tip when you pick them up, stars pop when you favorite (and wobble when you don't), copying a link earns a sticker, and your newest Space gets a "fresh" one.</li>
+  <li><strong>Everything up top.</strong> Dashboard and settings moved into the header, so the footer's gone and the list gets the room.</li>
+</ul>
+]]></description>
+            <enclosure url="https://stash.space.fast/releases/Stash-0.6.0.zip" length="2288417" type="application/octet-stream" sparkle:edSignature="qpuyDtqvnPOWHqfC/s453sAkPBOI/9NJ/fypLQisxPMELOHqeYH3DdSQ6fxqj0YehviI5oSKdR+Jt538Qn7TBw=="/>
+            <sparkle:deltas>
+                <enclosure url="https://stash.space.fast/releases/Stash0.6.0-0.5.0.delta" sparkle:deltaFrom="0.5.0" length="460942" type="application/octet-stream" sparkle:deltaFromSparkleExecutableSize="941872" sparkle:deltaFromSparkleLocales="de,he,ar,el,ja,fa,uk" sparkle:edSignature="JmSDvU4yTjkMyX5UD/ziOb7CNPD4ZCmazgtG5m9wpWBGkX2ODTCadkWmjODgp2SHdv8tFOm6K00lcJ/gTjGaBw=="/>
+                <enclosure url="https://stash.space.fast/releases/Stash0.6.0-0.4.1.delta" sparkle:deltaFrom="0.4.1" length="666962" type="application/octet-stream" sparkle:deltaFromSparkleExecutableSize="941872" sparkle:deltaFromSparkleLocales="de,he,ar,el,ja,fa,uk" sparkle:edSignature="AhAAAPwyFLL63n5iA46jde9pAmeleA+Bo7pFy+Ez6f0ivxaVC59mxabaFaz5BGG4jM6ZVUrC/IRdy2R6lbleBg=="/>
+                <enclosure url="https://stash.space.fast/releases/Stash0.6.0-0.4.0.delta" sparkle:deltaFrom="0.4.0" length="667302" type="application/octet-stream" sparkle:deltaFromSparkleExecutableSize="941872" sparkle:deltaFromSparkleLocales="de,he,ar,el,ja,fa,uk" sparkle:edSignature="FKqDQX/8F7uU9BHLN7vZzp7/hQx4/qyHaARx0sshPUBH0ZXdqPaPK2j966F1kvuyMBrcQtMGYwk8xqRzLJtiAw=="/>
+                <enclosure url="https://stash.space.fast/releases/Stash0.6.0-0.3.1.delta" sparkle:deltaFrom="0.3.1" length="722862" type="application/octet-stream" sparkle:deltaFromSparkleExecutableSize="941872" sparkle:deltaFromSparkleLocales="de,he,ar,el,ja,fa,uk" sparkle:edSignature="nv7JJ6uEaLdyKOYw211794qik/gABAr3GShNpn6sTIsYJOjWft6y91q959KZCzQmt2ZW2AJX4fojSbbjSS10CQ=="/>
+                <enclosure url="https://stash.space.fast/releases/Stash0.6.0-0.3.0.delta" sparkle:deltaFrom="0.3.0" length="722862" type="application/octet-stream" sparkle:deltaFromSparkleExecutableSize="941872" sparkle:deltaFromSparkleLocales="de,he,ar,el,ja,fa,uk" sparkle:edSignature="iKqys6gaCNQS5YQBmW1MenMOZFXUz97JK+FMXllTYfE5BO2xDy+cThCntKqsRCceMPeUb85F1GKLg6DdREMSAw=="/>
+            </sparkle:deltas>
+        </item>
+        <item>
             <title>0.5.0</title>
             <pubDate>Mon, 02 Nov 2026 18:01:48 -0500</pubDate>
             <sparkle:version>0.5.0</sparkle:version>
@@ -81,22 +105,6 @@
             <sparkle:deltas>
                 <enclosure url="https://stash.space.fast/releases/Stash0.3.1-0.3.0.delta" sparkle:deltaFrom="0.3.0" length="1070" type="application/octet-stream" sparkle:deltaFromSparkleExecutableSize="941872" sparkle:deltaFromSparkleLocales="de,he,ar,el,ja,fa,uk" sparkle:edSignature="EmbD+b2K2WvO954TI6eeEYT5Za6vn3zJSgl7pPWD0YQvF8wm1MkxWoIMO7OxvMFeL+gC9mcG7F97WaTaik9FBw=="/>
                 <enclosure url="https://stash.space.fast/releases/Stash0.3.1-0.2.0.delta" sparkle:deltaFrom="0.2.0" length="389190" type="application/octet-stream" sparkle:deltaFromSparkleExecutableSize="941872" sparkle:deltaFromSparkleLocales="de,he,ar,el,ja,fa,uk" sparkle:edSignature="LMHwimPDpyCfs6Y/lOOdfKzIogbfIKK9M2nbiMhqxJwRsxvJxDb0wwclK4khZWeMG+OWGhyDnLDspREpcI+yAA=="/>
-            </sparkle:deltas>
-        </item>
-        <item>
-            <title>0.3.0</title>
-            <pubDate>Mon, 02 Nov 2026 17:14:19 -0500</pubDate>
-            <sparkle:version>0.3.0</sparkle:version>
-            <sparkle:shortVersionString>0.3.0</sparkle:shortVersionString>
-            <sparkle:minimumSystemVersion>15.0</sparkle:minimumSystemVersion>
-            <description><![CDATA[<h2>Stash 0.3.0</h2>
-<ul>
-  <li><strong>Meet Stash.</strong> Spacefast's menu bar app has a name. Same app, same Spaces, same shortcuts.</li>
-</ul>
-]]></description>
-            <enclosure url="https://stash.space.fast/releases/Stash-0.3.0.zip" length="1729853" type="application/octet-stream" sparkle:edSignature="tEqtOlCip0BJihqaTpKte18NfzJNckLxrz+yxosz81bcSgOVtqNeYU9qUpvLOFhOhCtSWjqAclmLIwO9b7s2Dw=="/>
-            <sparkle:deltas>
-                <enclosure url="https://spaces-menubar.space.fast/releases/Stash0.3.0-0.2.0.delta" sparkle:deltaFrom="0.2.0" length="389926" type="application/octet-stream" sparkle:deltaFromSparkleExecutableSize="941872" sparkle:deltaFromSparkleLocales="de,he,ar,el,ja,fa,uk" sparkle:edSignature="4jgFc2bhO7SzSepURB7rmFVTr6q17SBsnD1NzPYHU4Ttlrkv2Lh3FsBxTxs+iWxqQb2CCj3mGy1ZdRg8ph/TAg=="/>
             </sparkle:deltas>
         </item>
     </channel>

@@ -79,11 +79,11 @@ enum Demo {
             for (appearance, suffix) in [(NSAppearance.Name.aqua, "light"), (.darkAqua, "dark")] {
                 let host = NSHostingView(rootView:
                     RootView()
-                        .background(Color(nsColor: .windowBackgroundColor))
-                        .clipShape(RoundedRectangle(cornerRadius: 12))
+                        .clipShape(RoundedRectangle(cornerRadius: Theme.panelRadius, style: .continuous))
                         // The hairline the panel has on screen, baked in so the
                         // page's shadow can follow the image's own shape.
-                        .overlay(RoundedRectangle(cornerRadius: 12).strokeBorder(Color.primary.opacity(0.18), lineWidth: 0.5))
+                        .overlay(RoundedRectangle(cornerRadius: Theme.panelRadius, style: .continuous)
+                            .strokeBorder(Theme.hairline, lineWidth: 1))
                         .environmentObject(store).environmentObject(panel))
                 host.appearance = NSAppearance(named: appearance)
                 host.frame = NSRect(x: 0, y: 0, width: width, height: height)

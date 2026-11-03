@@ -9,30 +9,23 @@ struct WebPanel: View {
     var body: some View {
         let web = store.webModel(for: link)
         VStack(spacing: 0) {
-            HStack(spacing: 10) {
-                VStack(alignment: .leading, spacing: 0) {
-                    Text(link.title).font(.callout.weight(.semibold)).lineLimit(1)
-                    Text(link.url.host() ?? "").font(.caption).foregroundStyle(.secondary).lineLimit(1)
+            HStack(spacing: 6) {
+                VStack(alignment: .leading, spacing: 1) {
+                    Text(link.title).font(Theme.font(14, .medium)).foregroundStyle(Theme.text).lineLimit(1)
+                    Text(link.url.host() ?? "").font(Theme.mono(11)).foregroundStyle(Theme.faint).lineLimit(1)
                 }
                 Spacer()
-                Group {
-                    Button { web.view.reload() } label: { Image(systemName: "arrow.clockwise") }
-                        .help("Reload")
-                    Button {
-                        NSPasteboard.general.clearContents()
-                        NSPasteboard.general.setString((web.view.url ?? link.url).absoluteString, forType: .string)
-                    } label: { Image(systemName: "link") }
-                        .help("Copy URL")
-                    Button { store.openExternally(web.view.url ?? link.url) } label: { Image(systemName: "safari") }
-                        .help("Open in browser")
-                    Button { store.closeSpace() } label: { Image(systemName: "xmark") }
-                        .help("Close")
+                RoundButton(symbol: "arrow.clockwise", help: "Reload") { web.view.reload() }
+                RoundButton(symbol: "link", help: "Copy URL") {
+                    NSPasteboard.general.clearContents()
+                    NSPasteboard.general.setString((web.view.url ?? link.url).absoluteString, forType: .string)
                 }
-                .buttonStyle(.borderless)
+                RoundButton(symbol: "safari", help: "Open in browser") { store.openExternally(web.view.url ?? link.url) }
+                RoundButton(symbol: "xmark", help: "Close") { store.closeSpace() }
             }
             .padding(.horizontal, 12)
-            .padding(.vertical, 7)
-            Divider()
+            .padding(.vertical, 9)
+            Rectangle().fill(Theme.hairline).frame(height: 1)
             if Demo.isRendering {
                 // A web view doesn't draw offscreen; show the page's screenshot.
                 Color.clear

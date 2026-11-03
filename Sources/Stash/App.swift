@@ -8,6 +8,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private var controller: PanelController?
 
     func applicationDidFinishLaunching(_ notification: Notification) {
+        Theme.registerFonts()
         if Demo.isRendering {
             Task {
                 await Demo.run()
@@ -262,6 +263,9 @@ final class SpacesStore: ObservableObject {
     // MARK: Favorites and opening
 
     func isFavorite(_ space: Space) -> Bool { favorites.contains { $0.id == space.id } }
+
+    /// One "fresh" sticker at most: the newest Space here, if it's new enough.
+    func isFreshest(_ space: Space) -> Bool { space.isFresh && spaces.first?.id == space.id }
 
     func toggleFavorite(_ space: Space) {
         if isFavorite(space) {

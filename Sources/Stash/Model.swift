@@ -62,6 +62,9 @@ extension Space {
     }
 
     var isDiscoverEntry: Bool { id.hasPrefix("sat_") }
+
+    /// Made in the last 12 hours. Not on Discover, where everything's someone else's.
+    var isFresh: Bool { !isDiscoverEntry && Date().timeIntervalSince(createdAt) < 12 * 3600 }
 }
 
 struct Team: Decodable, Identifiable {

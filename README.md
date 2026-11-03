@@ -32,7 +32,9 @@ the Spacefast CLI.
 open build/Stash.app
 ```
 
-Needs macOS 15+ and the Swift toolchain. MIT licensed. The app icon is a
+Needs macOS 15+ and the Swift toolchain. MIT licensed. The UI is set in
+Strichpunkt Sans, bundled in `Resources/Fonts` under the SIL Open Font License
+(`OFL.txt` there); the look lives in `Sources/Stash/Theme.swift`. The app icon is a
 placeholder from `swift tools/make-icon.swift`. The menu bar icon is
 `Resources/MenuBarIcon.svg`, the symbol from the Spacefast brand book, drawn
 as a template image.
@@ -72,7 +74,8 @@ done
 "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" --headless=new --hide-scrollbars \
   --force-device-scale-factor=2 --window-size=680,520 \
   --screenshot="$PWD/build/demo/habit-garden-panel.png" "file://$PWD/tools/demo-pages/habit-garden.html"
-swift build -c release && STASH_RENDER=site/shots STASH_DEMO_PAGES=build/demo .build/release/Stash
+swift build -c release && bin=$(swift build -c release --show-bin-path)
+STASH_RENDER=site/shots STASH_DEMO_PAGES=build/demo DYLD_FRAMEWORK_PATH="$bin" "$bin/Stash"
 ```
 
 Downloads are ad-hoc signed and not notarized, so macOS asks before the

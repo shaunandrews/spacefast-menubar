@@ -19,7 +19,7 @@ bin="$(swift build "${flags[@]}" --show-bin-path)"
 app=build/Stash.app
 rm -rf "$app"
 mkdir -p "$app/Contents/MacOS" "$app/Contents/Resources" "$app/Contents/Frameworks"
-cp Resources/* "$app/Contents/Resources/" 2>/dev/null || true
+cp -R Resources/. "$app/Contents/Resources/"
 cp "$bin/Stash" "$app/Contents/MacOS/Stash"
 # ditto keeps the framework's symlinks intact.
 ditto "$bin/Sparkle.framework" "$app/Contents/Frameworks/Sparkle.framework"
