@@ -1,4 +1,4 @@
 .build/
 build/
-site/releases/*.zip
-site/releases/*.delta
+site/releases/**/*.zip
+site/releases/**/*.delta
