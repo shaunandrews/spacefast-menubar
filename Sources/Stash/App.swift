@@ -56,6 +56,8 @@ final class SpacesStore: ObservableObject {
         didSet { UserDefaults.standard.set(openModes.mapValues(\.rawValue), forKey: "openModes") }
     }
     @Published private(set) var error: String?
+    /// Something to say on the sign-in screen that isn't an error.
+    @Published private(set) var notice: String?
     @Published private(set) var loading = false
     @Published var tab: String {
         didSet {
@@ -170,7 +172,11 @@ final class SpacesStore: ObservableObject {
 
     init(demo: Bool = false) {
         isDemo = demo
-        account = demo ? .signedOut : KeyFile.load().map(Account.signedIn) ?? .signedOut
+        // A key approved with less than Stash now asks for can't show
+        // thumbnails; it's retired below and you sign in once more.
+        let stored = demo ? nil : KeyFile.load()
+        let current = stored?.access == SpacefastAPI.access ? stored : nil
+        account = current.map(Account.signedIn) ?? .signedOut
         let defaults = UserDefaults.standard
         tab = defaults.string(forKey: "tab") ?? Self.allTab
         favorites = defaults.data(forKey: "favorites")
@@ -181,6 +187,11 @@ final class SpacesStore: ObservableObject {
         showDiscover = defaults.object(forKey: "showDiscover") as? Bool ?? true
         discoverSeenAt = defaults.object(forKey: "discoverSeenAt") as? Date
         guard !demo else { return }
+        if let stale = stored, current == nil {
+            KeyFile.delete()
+            notice = "Stash needs a fresh sign-in to show thumbnails. One click."
+            Task { try? await SpacefastAPI(token: stale.secret).revokeKey(stale.id) }
+        }
         Task { await refresh() }
         timer = Timer.scheduledTimer(withTimeInterval: 300, repeats: true) { [weak self] _ in
             Task { await self?.refresh() }
@@ -314,6 +325,7 @@ final class SpacesStore: ObservableObject {
     func startSignIn() {
         signIn?.cancel()
         error = nil
+        notice = nil
         signIn = Task {
             let api = SpacefastAPI()
             do {
@@ -329,7 +341,7 @@ final class SpacesStore: ObservableObject {
                     case .pending:
                         continue
                     case .approved(let id, let secret):
-                        let key = StoredKey(id: id, secret: secret)
+                        let key = StoredKey(id: id, secret: secret, access: SpacefastAPI.access)
                         KeyFile.save(key)
                         account = .signedIn(key)
                         await refresh()

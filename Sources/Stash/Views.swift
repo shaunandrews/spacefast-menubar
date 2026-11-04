@@ -169,9 +169,9 @@ struct SpacesPanel: View {
                 .font(Theme.font(24, .medium))
                 .foregroundStyle(Theme.text)
                 .lineSpacing(1)
-            Text("Sign in to see your Spaces here. Stash only asks to read them.")
-                .font(Theme.font(13))
-                .foregroundStyle(Theme.muted)
+            Text(store.notice ?? "Sign in to see your Spaces here.")
+                .font(Theme.font(13, store.notice == nil ? .regular : .medium))
+                .foregroundStyle(store.notice == nil ? Theme.muted : Theme.text)
                 .fixedSize(horizontal: false, vertical: true)
             GreenPill(title: "Sign in with Spacefast") { store.startSignIn() }
             if let error = store.error {

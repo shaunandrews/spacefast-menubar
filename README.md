@@ -22,7 +22,10 @@ Your newest Spacefast Spaces, one click from the menu bar.
 - **Updates** — Sparkle checks daily; ⚙︎ › Check for Updates… checks now.
 
 Sign in from the menu: it opens the Spacefast approval page (the device flow)
-and asks for `read` access only. The key lives in an owner-only file in
+and asks for full (`agent`) access: since November 2026 read-only keys get no
+thumbnails, and private Spaces in the panel and padlocks need it too. A key
+from before 0.6.1 is read-only; Stash revokes it and asks you to sign in once
+more. The key lives in an owner-only file in
 `~/Library/Application Support/Spacefast Menubar/`, like the sf CLI's login;
 Sign out revokes it. Until the app has its own device client, the approval page names it
 the Spacefast CLI.
@@ -87,7 +90,7 @@ The dashboard marks private Spaces with a padlock, read from each Space's
 Grants (`accessSummaryKind` in the monorepo's
 `packages/common/src/utils/space-access.ts`).
 `GET /v1/spaces/{id}/grants` needs `access.manage` on the Space, so this app's
-read-only key gets `403 space_management_required`. Asking for `agent` access
-would work but gives a viewer write access. The better fix is a `visibility`
-field (`public | scoped | private`) on the Space list response: no extra
-permission, and no per-Space request.
+read-only key got `403 space_management_required`. Since 0.6.1 Stash signs in
+with `agent` access, which can read Grants, so padlocks are buildable now. A
+`visibility` field (`public | scoped | private`) on the Space list response
+would still be better: no per-Space request.

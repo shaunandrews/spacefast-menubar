@@ -29,10 +29,13 @@ struct SpacefastAPI {
         case ended(String)
     }
 
+    /// The access profile Stash signs in with. Full (`agent`): read-only keys
+    /// no longer get thumbnails, and private Spaces and padlocks need more too.
+    static let access = "agent"
+
     func startDevice() async throws -> DeviceStart {
-        // No clientId yet: the server defaults to the CLI's. `read` is all a
-        // viewer needs.
-        try await request("/v1/auth/device", method: "POST", body: ["access": "read"], authenticated: false)
+        // No clientId yet: the server defaults to the CLI's.
+        try await request("/v1/auth/device", method: "POST", body: ["access": Self.access], authenticated: false)
     }
 
     func pollDevice(_ deviceCode: String) async throws -> DevicePoll {

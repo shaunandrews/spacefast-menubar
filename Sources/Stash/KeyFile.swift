@@ -4,6 +4,9 @@ import Foundation
 struct StoredKey: Codable {
     let id: String
     let secret: String
+    /// The access profile it was approved with. Keys from before 0.6.1 have
+    /// none: they were read-only.
+    var access: String? = nil
 }
 
 /// Kept in an owner-only file, like the sf CLI's login, not the Keychain: a
