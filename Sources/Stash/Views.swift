@@ -162,47 +162,74 @@ struct SpacesPanel: View {
 
     // MARK: States
 
+    /// Sign-in and approval share one column: left-aligned text, no wider
+    /// than reads well, centered in the panel both ways.
+    private func signInLayout<Copy: View>(@ViewBuilder _ copy: () -> Copy) -> some View {
+        copy()
+            .frame(maxWidth: 380, alignment: .leading)
+            .padding(.horizontal, 24)
+            .padding(.vertical, 20)
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+
     private var signedOut: some View {
-        VStack(alignment: .leading, spacing: 14) {
-            CardStack(symbol: "sparkle")
-            (Text("Every Space you've made,\n") + Text("one click away.").foregroundColor(Theme.accent))
-                .font(Theme.font(24, .medium))
-                .foregroundStyle(Theme.text)
-                .lineSpacing(1)
-            Text(store.notice ?? "Sign in to see your Spaces here.")
-                .font(Theme.font(13, store.notice == nil ? .regular : .medium))
-                .foregroundStyle(store.notice == nil ? Theme.muted : Theme.text)
-                .fixedSize(horizontal: false, vertical: true)
-            GreenPill(title: "Sign in with Spacefast") { store.startSignIn() }
-            if let error = store.error {
-                Text(error).font(Theme.font(12)).foregroundStyle(.red)
-                    .fixedSize(horizontal: false, vertical: true)
+        signInLayout {
+            VStack(alignment: .leading, spacing: 14) {
+                if let notice = store.notice {
+                    Label(notice, systemImage: "arrow.triangle.2.circlepath")
+                        .font(Theme.font(12, .medium))
+                        .foregroundStyle(Theme.accent)
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 5)
+                        .background(Theme.greenSoft, in: Capsule())
+                }
+                VStack(alignment: .leading, spacing: 8) {
+                    (Text("Every Space you've made,\n") + Text("one click away.").foregroundColor(Theme.accent))
+                        .font(Theme.font(22, .medium))
+                        .foregroundStyle(Theme.text)
+                        .lineSpacing(2)
+                        .fixedSize(horizontal: false, vertical: true)
+                    Text("Sign in with your Spacefast account. Your browser opens so you can approve it.")
+                        .font(Theme.font(13))
+                        .foregroundStyle(Theme.muted)
+                        .lineSpacing(2)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+                GreenPill(title: "Sign in with Spacefast") { store.startSignIn() }
+                    .padding(.top, 2)
+                if let error = store.error {
+                    Text(error).font(Theme.font(12)).foregroundStyle(.red)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
             }
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(20)
     }
 
     private func signingIn(code: String, url: URL) -> some View {
-        VStack(alignment: .leading, spacing: 14) {
-            Text("Approve this code in your browser.")
-                .font(Theme.font(15, .medium))
-                .foregroundStyle(Theme.text)
-            Text(code)
-                .font(Theme.mono(26, .semibold))
-                .foregroundStyle(Theme.accent)
-                .textSelection(.enabled)
-                .padding(.horizontal, 16)
-                .padding(.vertical, 8)
-                .background(Theme.slab, in: RoundedRectangle(cornerRadius: Theme.rowRadius))
-            HStack(spacing: 8) {
-                SlabPill(title: "Open again") { NSWorkspace.shared.open(url) }
-                SlabPill(title: "Cancel") { store.cancelSignIn() }
-                ProgressView().controlSize(.small).padding(.leading, 4)
+        signInLayout {
+            VStack(alignment: .leading, spacing: 14) {
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("Check your browser.")
+                        .font(Theme.font(22, .medium))
+                        .foregroundStyle(Theme.text)
+                    Text("Approve Stash there, and make sure the code matches.")
+                        .font(Theme.font(13))
+                        .foregroundStyle(Theme.muted)
+                        .lineSpacing(2)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+                CodeKeys(code: code)
+                HStack(spacing: 8) {
+                    SlabPill(title: "Open again") { NSWorkspace.shared.open(url) }
+                    SlabPill(title: "Cancel") { store.cancelSignIn() }
+                }
+                .padding(.top, 2)
+                HStack(spacing: 7) {
+                    Spinner(size: 10)
+                    Text("Waiting for approval…").font(Theme.font(12)).foregroundStyle(Theme.muted)
+                }
             }
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(20)
     }
 
     @ViewBuilder private var content: some View {
@@ -241,6 +268,29 @@ struct SpacesPanel: View {
                 }
             }
         }
+    }
+}
+
+/// The sign-in code as a row of keycaps, so it's easy to match by eye.
+struct CodeKeys: View {
+    let code: String
+
+    var body: some View {
+        HStack(spacing: 4) {
+            ForEach(Array(code.enumerated()), id: \.offset) { _, character in
+                if character == "-" {
+                    Text("–").font(Theme.mono(18, .semibold)).foregroundStyle(Theme.faint).padding(.horizontal, 2)
+                } else {
+                    Text(String(character))
+                        .font(Theme.mono(20, .semibold))
+                        .foregroundStyle(Theme.text)
+                        .frame(width: 26, height: 34)
+                        .background(Theme.slab, in: RoundedRectangle(cornerRadius: 7, style: .continuous))
+                        .overlay(RoundedRectangle(cornerRadius: 7, style: .continuous).strokeBorder(Theme.hairline))
+                }
+            }
+        }
+        .textSelection(.enabled)
     }
 }
 

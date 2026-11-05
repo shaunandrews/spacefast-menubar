@@ -195,7 +195,7 @@ final class PanelController: NSObject, ObservableObject {
         let visible = screen.visibleFrame
         let signedIn = if case .signedIn = store.account { true } else { false }
         let width = listWidth + (signedIn && store.openSpace != nil ? spaceWidth + 1 : 0)
-        let h = signedIn ? min(max(height, 300), visible.height - 16) : 300
+        let h = signedIn ? min(max(height, 300), visible.height - 16) : 320
         let listX = min(icon.midX - listWidth / 2, visible.maxX - 8 - listWidth)
         let x = max(listX + listWidth - width, visible.minX + 8)
         return NSRect(x: x, y: visible.maxY - 6 - h, width: width, height: h)
@@ -261,7 +261,7 @@ final class PanelController: NSObject, ObservableObject {
 
     /// The Spacefast mark from Resources/MenuBarIcon.svg, as a template so it
     /// follows the menu bar's appearance.
-    private static let mark: NSImage? = Theme.mark(height: 14)
+    private static let mark: NSImage? = Theme.mark(height: 13)
         ?? NSImage(systemSymbolName: "sparkles.rectangle.stack", accessibilityDescription: "Stash")
 
     /// A solid slab with big rounded corners and a hairline edge, like

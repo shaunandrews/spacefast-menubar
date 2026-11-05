@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # Builds Stash.app (menubar-only, no Dock icon) into ./build.
 #   UNIVERSAL=1   Apple silicon and Intel in one binary (for releases)
-#   VERSION=0.2.0 the version the app reports, and Sparkle compares
+#   VERSION       the version the app reports, and Sparkle compares. Local
+#                 builds default to 999 so Sparkle never swaps them for a release.
 #   SIGN_IDENTITY a codesigning identity (default ad-hoc)
 set -euo pipefail
 cd "$(dirname "$0")"
@@ -9,7 +10,7 @@ cd "$(dirname "$0")"
 # The feed Sparkle checks, and the public half of the key release.sh signs with.
 FEED_URL=https://stash.space.fast/appcast.xml
 PUBLIC_ED_KEY=aQ3ewORUPOKpgWZwA/VCg1F3kYJtrip7krhgFVa80zQ=
-VERSION="${VERSION:-0.2.0}"
+VERSION="${VERSION:-999}"
 
 flags=(-c release)
 [[ -n "${UNIVERSAL:-}" ]] && flags+=(--arch arm64 --arch x86_64)

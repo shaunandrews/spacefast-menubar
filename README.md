@@ -39,7 +39,7 @@ Needs macOS 15+ and the Swift toolchain. MIT licensed. The UI is set in
 Strichpunkt Sans, bundled in `Resources/Fonts` under the SIL Open Font License
 (`OFL.txt` there); the look lives in `Sources/Stash/Theme.swift`. The app icon is a
 placeholder from `swift tools/make-icon.swift`. The menu bar icon is
-`Resources/MenuBarIcon.svg`, the symbol from the Spacefast brand book, drawn
+`Resources/MenuBarIcon.svg`, the S symbol from the Spacefast brand book, drawn
 as a template image.
 
 ## Releasing
